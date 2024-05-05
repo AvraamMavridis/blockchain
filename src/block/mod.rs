@@ -3,9 +3,9 @@ use sha2::{Digest, Sha256};
 
 pub struct Block {
     pub index: u64,
-    timestamp: DateTime<Utc>,
-    data: String,
-    previous_hash: String,
+    pub timestamp: DateTime<Utc>,
+    pub data: String,
+    pub previous_hash: String,
     pub hash: String,
 }
 
@@ -21,7 +21,7 @@ impl Block {
         }
     }
 
-    fn calculate_hash(
+    pub fn calculate_hash(
         index: u64,
         timestamp: &DateTime<Utc>,
         data: &str,

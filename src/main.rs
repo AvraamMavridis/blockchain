@@ -2,5 +2,12 @@ mod block;
 mod blockchain;
 
 fn main() {
-    println!("Hello, world!");
+    let mut chain = blockchain::BlockChain::new();
+
+    chain.add_block("block 2".to_string());
+    chain.add_block("block 3".to_string());
+
+    if chain.validate_chain() {
+        println!("Valid chain!");
+    };
 }
