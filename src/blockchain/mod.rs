@@ -48,3 +48,36 @@ impl BlockChain {
         return true;
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_blockchain() {
+        let blockchain = BlockChain::new();
+        assert_eq!(blockchain.chain.len(), 1); // Check if genesis block is created
+        assert_eq!(blockchain.chain[0].data, "Genesis Block");
+    }
+
+    #[test]
+    fn test_add_block() {
+        let mut blockchain = BlockChain::new();
+        blockchain.add_block("Test Data".to_string());
+        assert_eq!(blockchain.chain.len(), 2); // Should have genesis and one added block
+        assert_eq!(blockchain.chain[1].data, "Test Data");
+    }
+
+    #[test]
+    fn test_validate_chain() {
+        let mut blockchain = BlockChain::new();
+        blockchain.add_block("Block 1".to_string());
+        blockchain.add_block("Block 2".to_string());
+        assert!(blockchain.validate_chain()); // Check if the blockchain is valid after additions
+
+        // Tamper with the blockchain
+        blockchain.chain[1].data = "Tampered Data".to_string();
+        assert!(!blockchain.validate_chain()); // Validation should fail after tampering
+    }
+}
