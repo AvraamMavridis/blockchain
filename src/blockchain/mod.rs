@@ -1,6 +1,6 @@
 use super::block;
 use chrono::Utc;
-use std::{fs::{File,OpenOptions}, io::Write};
+use std::{fs::{OpenOptions}, io::Write};
 
 pub struct BlockChain {
     chain: Vec<block::Block>,
@@ -26,6 +26,7 @@ impl BlockChain {
         let new_index = last_block.index + 1;
         let block = block::Block::new(new_index, Utc::now(), data, previous_hash);
         self.chain.push(block);
+        self.save_chain_to_disk();
         self
     }
 
@@ -84,14 +85,14 @@ mod tests {
 
     #[test]
     fn test_new_blockchain() {
-        let blockchain = BlockChain::new();
+        let blockchain = BlockChain::new("./test.json".to_string());
         assert_eq!(blockchain.chain.len(), 1); // Check if genesis block is created
         assert_eq!(blockchain.chain[0].data, "Genesis Block");
     }
 
     #[test]
     fn test_add_block() {
-        let mut blockchain = BlockChain::new();
+        let mut blockchain = BlockChain::new("./test.json".to_string());
         blockchain.add_block("Test Data".to_string());
         assert_eq!(blockchain.chain.len(), 2); // Should have genesis and one added block
         assert_eq!(blockchain.chain[1].data, "Test Data");
@@ -99,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_validate_chain() {
-        let mut blockchain = BlockChain::new();
+        let mut blockchain = BlockChain::new("./test.json".to_string());
         blockchain.add_block("Block 1".to_string());
         blockchain.add_block("Block 2".to_string());
         assert!(blockchain.validate_chain()); // Check if the blockchain is valid after additions
