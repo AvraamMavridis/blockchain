@@ -1,6 +1,9 @@
 use chrono::{DateTime, Utc};
 use sha2::{Digest, Sha256};
+use serde::{Serialize, Deserialize};
 
+
+#[derive(Serialize, Deserialize)]
 pub struct Block {
     pub index: u64,
     pub timestamp: DateTime<Utc>,

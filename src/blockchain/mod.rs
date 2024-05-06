@@ -1,12 +1,14 @@
 use super::block;
 use chrono::Utc;
+use std::{fs::{File,OpenOptions}, io::Write};
 
 pub struct BlockChain {
     chain: Vec<block::Block>,
+    file_path: String,
 }
 
 impl BlockChain {
-    pub fn new() -> Self {
+    pub fn new(path: String) -> Self {
         BlockChain {
             chain: vec![block::Block::new(
                 0,
@@ -14,6 +16,7 @@ impl BlockChain {
                 "Genesis Block".to_string(),
                 "0".to_string(),
             )],
+            file_path: path,
         }
     }
 
@@ -47,6 +50,31 @@ impl BlockChain {
         }
         return true;
     }
+
+    fn save_chain_to_disk(&self) {
+      let mut file = match OpenOptions::new()
+          .write(true)
+          .create(true)
+          .open(&self.file_path) {
+              Ok(file) => file,
+              Err(e) => {
+                  eprintln!("Failed to open or create the file: {}", e);
+                  return;
+              }
+          };
+  
+      let json_string = match serde_json::to_string(&self.chain) {
+          Ok(json) => json,
+          Err(e) => {
+              eprintln!("Failed to serialize chain: {}", e);
+              return;
+          }
+      };
+  
+      if let Err(e) = writeln!(file, "{}", json_string) {
+          eprintln!("Couldn't write to file: {}", e);
+      }
+  }
 }
 
 
