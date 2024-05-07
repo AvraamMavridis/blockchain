@@ -13,7 +13,7 @@ enum Action {
 
 }
 
-fn parse_action(args: &Vec<String>) -> Action {
+fn parse_action(args: &[String]) -> Action {
     match args[1].as_str() {
         "create" => Action::CreateOrLoad(args[2].to_string()),
         "delete" => Action::Delete(args[2].to_string()),
