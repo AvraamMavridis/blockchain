@@ -1,6 +1,6 @@
 use super::block;
 use chrono::Utc;
-use std::{fs::{OpenOptions}, io::Write};
+use std::{fs::{self, OpenOptions}, io::{Write}};
 
 pub struct BlockChain {
     chain: Vec<block::Block>,
@@ -9,7 +9,7 @@ pub struct BlockChain {
 
 impl BlockChain {
     pub fn new(path: String) -> Self {
-        BlockChain {
+        let chain = BlockChain {
             chain: vec![block::Block::new(
                 0,
                 Utc::now(),
@@ -17,7 +17,28 @@ impl BlockChain {
                 "0".to_string(),
             )],
             file_path: path,
-        }
+        };
+        chain.save_chain_to_disk();
+        chain
+    }
+
+    pub fn exist(path: &String) -> bool {
+      std::path::Path::new(path).exists()
+    }
+
+    pub fn load(path: String) -> Self {
+      let file = std::fs::File::open(&path).expect("Failed to open file");
+      let reader = std::io::BufReader::new(file);
+      let chain: Vec<block::Block> = serde_json::from_reader(reader).expect("Failed to deserialize chain");
+
+      BlockChain {
+          chain,
+          file_path: path,
+      }
+    }
+
+    pub fn delete(path: &String) {
+      fs::remove_file(path).unwrap();
     }
 
     pub fn add_block(&mut self, data: String) -> &mut Self {
